@@ -8,10 +8,13 @@ Given a graph G=(V,E), the goal is to find a partition of the set of vertices V 
 
 ## Training
 
-Simply run ``training.py``. This will train the embedding and the partitioning module separately and will save the tuned weights.
+Simply run ``training.py``. This will train the embedding and the partitioning modules separately and will save the tuned weights.
 
 ## Testing
 
-
-
+Run ``test.py`` with the following arguments
+- ``nmin``: minimum graph size (default: 50)
+- ``nmax``: maximum graph size (default: 100)
+- ``ntest``: number of testing graphs (default: 1000)
+- ``dataset``: dataset type to choose among ``'delaunay'``, ``'suitesparse'``, and the Finite Elements triangulations ``graded_l``, ``hole3``, ``hole6`` (default: ``'delaunay'``). With the first choice, random Delaunay graphs in the unit square and in the rectangle $[0,2]x[0,1]$ are generated before the evaluation. With the second choice, the user needs to download the matrices from the [SuiteSparse matrix collection](https://sparse.tamu.edu/) in the Matrix Market format and put the ``.mtx`` files in the folder ``dl-graph-partitioning/suitesparse``. In the paper we focus on matrices coming from 2D/3D discretizations. For the Finite Elements triangulations, the user can download the matrices from [here](https://portal.nersc.gov/project/sparse/strumpack/fe_triangulations.tar.xz) and put the 3 folders in ``drl-graph-partitioning/``.
 
