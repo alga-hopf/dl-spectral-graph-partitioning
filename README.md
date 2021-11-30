@@ -1,6 +1,6 @@
 # Deep learning and spectral embedding for graph partitioning
 
-Deep learning model that integrates spectral embedding to partition a graph such that the normalized cut is the smallest possible. Based on [Deep Learning and Spectral Embedding for Graph Partitioning](https://arxiv.org/abs/2110.08614v1)
+Deep learning model that integrates spectral embedding to partition a graph such that the normalized cut is the smallest possible. Based on [Deep Learning and Spectral Embedding for Graph Partitioning](https://arxiv.org/abs/2110.08614v1).
 
 ## Minimize the normalized cut
 
