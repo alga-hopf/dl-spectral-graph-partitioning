@@ -18,3 +18,10 @@ Run ``test.py`` with the following arguments
 - ``ntest``: number of testing graphs (default: 50)
 - ``dataset``: dataset type to choose among ``'delaunay'``, ``'suitesparse'``, and the Finite Elements triangulations ``graded_l``, ``hole3``, ``hole6`` (default: ``'delaunay'``). With the first choice, random Delaunay graphs in the unit square and in the rectangle [0,2]x[0,1] are generated before the evaluation. With the second choice, the user needs to download the matrices from the [SuiteSparse matrix collection](https://sparse.tamu.edu/) in the Matrix Market format and put the ``.mtx`` files in the folder ``dl-spectral-graph-partitioning/suitesparse``. In the paper we focus on matrices coming from 2D/3D discretizations. For the Finite Elements triangulations, the user can download the matrices from [here](https://portal.nersc.gov/project/sparse/strumpack/fe_triangulations.tar.xz) and put the 3 folders in ``dl-spectral-graph-partitioning/``.
 
+## Required software
+- Pytorch
+- Pytorch Geometric
+- NetworkX
+- Numpy
+- Scipy
+- NetworkX-METIS
