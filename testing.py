@@ -10,7 +10,8 @@ from scipy.io import mmread,mminfo
 from scipy.spatial import Delaunay
 import torch
 import torch.nn as nn
-from torch_geometric.data import Data, Batch, DataLoader
+from torch_geometric.data import Data, Batch
+from torch_geometric.loader import DataLoader
 from torch_geometric.nn import SAGEConv, avg_pool, graclus
 from torch_geometric.utils import to_networkx, degree, to_scipy_sparse_matrix, get_laplacian, remove_self_loops, subgraph
 from itertools import combinations
@@ -21,7 +22,7 @@ import ctypes
 import argparse
 from pathlib import Path
 
-libscotch = ctypes.cdll.LoadLibrary('gap/scotch/build/libSCOTCHWrapper.so')
+libscotch = ctypes.cdll.LoadLibrary('scotch/build/libSCOTCHWrapper.so')
 
 # Some function to generate the dataset. The dataset is made of graphs
 # associated with Delaunay meshes
@@ -462,10 +463,11 @@ if __name__ == "__main__":
 			else:
 				print('Delaunay square')
 			g=graph_delaunay_from_points(points)
-			adj = nx.to_scipy_sparse_matrix(g, format='coo', dtype=np.float)
+			adj = nx.to_scipy_sparse_matrix(g, format='coo', dtype=float)
 			row = adj.row
 			col = adj.col
-			edges = torch.tensor([row, col], dtype=torch.long)
+			rowcols = np.array([row,col])
+			edges = torch.tensor(rowcols, dtype=torch.long)
 			nodes = torch.randn(adj.shape[0], 2)
 			g = nx.Graph(adj)
 			graph = Batch(x=nodes, edge_index=edges).to(device)
@@ -491,7 +493,8 @@ if __name__ == "__main__":
 					if nx.is_connected(g):
 						row=adj.row
 						col=adj.col
-						edges,_=remove_self_loops(torch.tensor([row,col],dtype=torch.long))
+						rowcols=np.array([row,col])
+						edges,_=remove_self_loops(torch.tensor(rowcols,dtype=torch.long))
 						nodes=torch.randn(adj.shape[0],2)
 						graph=Batch(x=nodes, edge_index=edges).to(device)
 						g=to_networkx(graph,to_undirected=True)
@@ -594,16 +597,17 @@ if __name__ == "__main__":
 		print('')
 		
 	# Print the median for all the recorded quantities for each method
-	print('')
-	print('Number of graphs:',i)
-	print('Max nodes:',np.max(nodes_graphs),'  Max edges:',np.max(edges_graphs))
-	print('Median normalized cut:  GAP:',np.round(np.median(nc_gap_single),4),'  App. Spectral:',np.round(np.median(nc_eig_single),4),'  METIS:',np.round(np.median(nc_metis_single),4),'  Spectral:',np.round(np.median(nc_true_single),4),'  Scotch:',np.round(np.median(nc_scotch_single),4))
-	print('Median balance:  GAP:',np.round(np.median(vols),4),'  App. Spectral:',np.round(np.median(vols_eig),4),'  METIS:',np.round(np.median(vols_met),4),'  Spectral:',np.round(np.median(vols_eig_true),4),'  Scotch:',np.round(np.median(vols_scotch),4))
-	print('Median cut:  GAP:',np.round(np.median(c_gap_single),4),'  App. Spectral:',np.round(np.median(c_eig_single),4),'  METIS:',np.round(np.median(c_metis_single),4),'  Spectral:',np.round(np.median(c_true_single),4),'  Scotch:',np.round(np.median(c_scotch_single),4))
-	print('Median runtime:  GAP:',np.round(np.median(t_gap_single),4),'  App. Spectral:',np.round(np.median(t_eig_single),4),'  METIS:',np.round(np.median(t_metis_single),4),'  Spectral:',np.round(np.median(t_true_single),4),'  Scotch:',np.round(np.median(t_scotch_single),4))
-	if dataset_type!='delaunay':
-		print('Graphs for which GAP fails:',names_failed)
-	else:
-		print('Number of graphs for which GAP fails:',count_failed)
-	print('')
+	if nodes_graphs!=[]:
+		print('')
+		print('Number of graphs:',i)
+		print('Max nodes:',np.max(nodes_graphs),'  Max edges:',np.max(edges_graphs))
+		print('Median normalized cut:  GAP:',np.round(np.median(nc_gap_single),4),'  App. Spectral:',np.round(np.median(nc_eig_single),4),'  METIS:',np.round(np.median(nc_metis_single),4),'  Spectral:',np.round(np.median(nc_true_single),4),'  Scotch:',np.round(np.median(nc_scotch_single),4))
+		print('Median balance:  GAP:',np.round(np.median(vols),4),'  App. Spectral:',np.round(np.median(vols_eig),4),'  METIS:',np.round(np.median(vols_met),4),'  Spectral:',np.round(np.median(vols_eig_true),4),'  Scotch:',np.round(np.median(vols_scotch),4))
+		print('Median cut:  GAP:',np.round(np.median(c_gap_single),4),'  App. Spectral:',np.round(np.median(c_eig_single),4),'  METIS:',np.round(np.median(c_metis_single),4),'  Spectral:',np.round(np.median(c_true_single),4),'  Scotch:',np.round(np.median(c_scotch_single),4))
+		print('Median runtime:  GAP:',np.round(np.median(t_gap_single),4),'  App. Spectral:',np.round(np.median(t_eig_single),4),'  METIS:',np.round(np.median(t_metis_single),4),'  Spectral:',np.round(np.median(t_true_single),4),'  Scotch:',np.round(np.median(t_scotch_single),4))
+		if dataset_type!='delaunay':
+			print('Graphs for which GAP fails:',names_failed)
+		else:
+			print('Number of graphs for which GAP fails:',count_failed)
+		print('')
 

@@ -10,7 +10,8 @@ from scipy.io import mmread
 from scipy.spatial import Delaunay
 import torch
 import torch.nn as nn
-from torch_geometric.data import Data, Batch, DataLoader
+from torch_geometric.data import Data, Batch
+from torch_geometric.loader import DataLoader
 from torch_geometric.nn import SAGEConv, avg_pool, graclus
 from torch_geometric.utils import to_networkx, degree, to_scipy_sparse_matrix, get_laplacian, remove_self_loops
 from itertools import combinations
@@ -54,12 +55,12 @@ def mixed_dataset(n,n_min,n_max,n_iter,n_iter_suite):
 		resize=np.concatenate((twos,ones),axis=1)
 		points=resize*points
 		g=graph_delaunay_from_points(points)
-		dataset.append(nx.to_scipy_sparse_matrix(g,format='coo',dtype=np.float))
+		dataset.append(nx.to_scipy_sparse_matrix(g,format='coo',dtype=float))
 	for i in range(n):
 		num_nodes=np.random.choice(np.arange(n_min,n_max+1,2))
 		points=np.random.random_sample((num_nodes,2))
 		g=graph_delaunay_from_points(points)
-		dataset.append(nx.to_scipy_sparse_matrix(g,format='coo',dtype=np.float))
+		dataset.append(nx.to_scipy_sparse_matrix(g,format='coo',dtype=float))
 	count=0
 	count_suite=0
 	for m in os.listdir(os.path.expanduser('~/dl-spectral-graph-partitioning/graded_l/')):
@@ -203,7 +204,8 @@ dataset=[]
 for adj in listData:
     row=adj.row
     col=adj.col
-    edges=torch.tensor([row,col],dtype=torch.long)
+    rowcols=np.array([row,col])
+    edges=torch.tensor(rowcols,dtype=torch.long)
     nodes=torch.randn(adj.shape[0],2)
     dataset.append(Data(x=nodes, edge_index=edges))
 loader=DataLoader(dataset,batch_size=1,shuffle=True)
@@ -344,7 +346,8 @@ for adj in listData:
 
 	row=adj.row
 	col=adj.col
-	edges=torch.tensor([row,col],dtype=torch.long)
+	rowcols=np.array([row,col])
+	edges=torch.tensor(rowcols,dtype=torch.long)
 	edges,_=remove_self_loops(edges)
 	nodes=torch.randn(adj.shape[0],2)
 
