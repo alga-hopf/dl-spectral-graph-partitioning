@@ -8,7 +8,10 @@ Given a graph G=(V,E), the goal is to find a partition of the set of vertices V 
 
 ## Training
 
-Simply run ``training.py``. This will train the embedding and the partitioning modules separately and will save the tuned weights.
+The training dataset is made of SuiteSparse matrices, Finite Elements triangulations and random Delaunay graphs. For the Suitesparse matrices, the user needs to download the matrices from the [SuiteSparse matrix collection](https://sparse.tamu.edu/) in the Matrix Market format and put the ``.mtx`` files in the folder ``dl-spectral-graph-partitioning/suitesparse``. In the paper we focus on matrices coming from 2D/3D discretizations. For the Finite Elements triangulations, the user can download the matrices from [here](https://portal.nersc.gov/project/sparse/strumpack/fe_triangulations.tar.xz) and put the 3 folders in ``dl-spectral-graph-partitioning/``. Finally, random Delaunay graphs in the unit square and in the rectangle [0,2]x[0,1] are automatically generated. After the folders are created, simply run ``training.py`` with arguments
+- ``nmin``: minimum graph size (default 200)
+- ``nmax``: max graph size (default 5000)
+This will train the embedding and the partitioning modules separately and will save the tuned weights.
 
 ## Testing
 
